@@ -18,7 +18,7 @@
     <h1 class="h1">Welcome to the super news!</h1>
     <div class="container">
       <div class="select__category">
-        <!-- <button class="btn__category_1 btn__category">Category 1</button> -->
+        <button class="btn__category_editor">Editor</button>
       </div>
       <div class="news__wrapper">
         <button class="add__news">+</button>
@@ -30,6 +30,19 @@
       <p class="modal__body">Body</p>
       <textarea class="modal__input_body"></textarea>
       <button class="modal__btn_send">Send</button>
+    </div>
+    <div class="editor">
+      <ul class="editor__ul">
+        <!-- <li class="editor__li">
+          <input class="editor__checkbox" type="checkbox" />
+          <input type="text"  class="editor__news_text" placeholder="Add category"></input>
+        </li> -->
+      </ul>
+      <input class="editor__input_add" type="text" />
+      <div class="editor__btn_container">
+        <!-- <button class="editor__add">Delete</button> -->
+        <button class="editor__apply">Apply</button>
+      </div>
     </div>
   </body>
   <script type="module" src="./script.js"></script>
