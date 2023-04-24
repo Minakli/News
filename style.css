@@ -15,8 +15,15 @@ body body {
   margin-top: 30px;
   font-size: 40px;
 }
-.select__category {
+.categories__buttons_wrapper {
   margin: 50px 20px 0 20px;
+  /* width: 160px; */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.select__category {
+  /* margin: 50px 20px 0 20px; */
   display: flex;
   flex-direction: column;
   gap: 20px;

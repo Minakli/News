@@ -12,30 +12,31 @@ const editorUl = document.querySelector(".editor__ul");
 const editorApply = document.querySelector(".editor__apply");
 
 let arrCategory = [];
-let arr = [
-  { title: "qwe", body: "qweqweqwe", kategory: 1, id: "id" },
-  { title: "asd", body: "asdasdasd", kategory: 2, id: "id" },
-  { title: "zxc", body: "zxczcxzxc", kategory: 3, id: "id" },
-];
+let arrNews = [];
 
-//Get categories from the server
+//Geting Categories from the server
 async function getArrCategory() {
   let response = await fetch("http://24api.ru/rest-news-category");
   arrCategory = await response.json();
+  selectCategory.innerHTML = "";
   arrCategory.forEach((elem) => {
-    createCategory(elem);
+    createBtnCategory(elem);
   });
 }
-getArrCategory();
 
-// Showing all the news
-function showAllNews() {
-  arr.forEach((elem) => {
-    createSingleNews(elem);
+// Displaying the Category Editor
+showEditor.addEventListener("click", () => {
+  modal.style.display = "none";
+  editorUl.innerHTML = "";
+  arrCategory.forEach((elem) => {
+    createEditorLi(elem);
   });
-}
-// Creating a category
-function createCategory(obj) {
+  // createEditorLi();
+  editor.style.display = "flex";
+});
+
+// Creating a buttons of Categories
+function createBtnCategory(obj) {
   const btnCategory = document.createElement("button");
   btnCategory.classList.add("btn__category");
   btnCategory.textContent = obj.name;
@@ -43,7 +44,27 @@ function createCategory(obj) {
   btnCategory.addEventListener("click", () => {});
 }
 
-// Deleting a category
+// Apply Category Editor changes
+editorApply.addEventListener("click", () => {
+  //Get li array
+  let arrLi = editorUl.querySelectorAll("li");
+  arrLi.forEach((elem) => {
+    const checkbox = elem.querySelector(`input[type="checkbox"]`);
+    if (checkbox.checked) {
+      deleteCategory(elem);
+    }
+    editCategory(elem);
+  });
+
+  createCategory();
+
+  getArrCategory();
+  editor.style.display = "none";
+  // Перезагрузка страницы
+  // location.reload();
+});
+
+// Deleting a Category
 async function deleteCategory(elem) {
   let response = await fetch("http://24api.ru/rest-news-category/" + elem.id, {
     method: "DELETE",
@@ -56,12 +77,11 @@ async function deleteCategory(elem) {
   console.log(isDelete);
 }
 
-//Editing a category
+//Editing a Category
 async function editCategory(elem) {
   const text = elem.querySelector(`input[type="text"]`);
   let unit = { name: "qwe" };
   unit = arrCategory.find((item) => elem.id == item.id);
-  console.log(unit);
   if (text.value !== unit.name) {
     let response = await fetch(
       "http://24api.ru/rest-news-category/" + unit.id,
@@ -78,20 +98,29 @@ async function editCategory(elem) {
   }
 }
 
-// Creating  editor unit
-function createEditorLi(object) {
-  const editorLi = document.createElement("li");
-  editorLi.classList.add("editor__li");
-  editorLi.setAttribute("id", object.id);
-  editorUl.append(editorLi);
-  const editorLiCheckbox = document.createElement("input");
-  editorLiCheckbox.classList.add("editor__checkbox");
-  editorLiCheckbox.setAttribute("type", "checkbox");
-  const editorLiText = document.createElement("input");
-  editorLiText.classList.add("editor__news_text");
-  editorLiText.setAttribute("type", "text");
-  editorLiText.value = object.name;
-  editorLi.append(editorLiCheckbox, editorLiText);
+// Creating a new Category
+async function createCategory() {
+  const editorInputAdd = document.querySelector(".editor__input_add");
+  if (editorInputAdd.value) {
+    const id = Math.random();
+    await fetch("http://24api.ru/rest-news-category", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({ name: editorInputAdd.value, id: id }),
+    });
+  }
+}
+
+// Showing all the news
+async function getArrNews() {
+  let response = await fetch("http://24api.ru/rest-news", {});
+  arrNews = await response.json();
+  arrNews.forEach((elem) => {
+    createSingleNews(elem);
+  });
 }
 
 //Creating a piece of news
@@ -114,6 +143,22 @@ function createSingleNews(obj) {
   singleNews.append(btnEdit, newsTitle, newsBody);
 }
 
+// Creating  editor unit
+function createEditorLi(object) {
+  const editorLi = document.createElement("li");
+  editorLi.classList.add("editor__li");
+  editorLi.setAttribute("id", object.id);
+  editorUl.append(editorLi);
+  const editorLiCheckbox = document.createElement("input");
+  editorLiCheckbox.classList.add("editor__checkbox");
+  editorLiCheckbox.setAttribute("type", "checkbox");
+  const editorLiText = document.createElement("input");
+  editorLiText.classList.add("editor__news_text");
+  editorLiText.setAttribute("type", "text");
+  editorLiText.value = object.name;
+  editorLi.append(editorLiCheckbox, editorLiText);
+}
+
 modalBtnSend.addEventListener("click", () => {
   modal.style.display = "none";
 });
@@ -123,33 +168,5 @@ addNews.addEventListener("click", () => {
   editor.style.display = "none";
 });
 
-// Displaying the Category Editor
-showEditor.addEventListener("click", () => {
-  modal.style.display = "none";
-  editorUl.innerHTML = "";
-  arrCategory.forEach((elem) => {
-    createEditorLi(elem);
-  });
-  // createEditorLi();
-  editor.style.display = "flex";
-});
-
-editorApply.addEventListener("click", () => {
-  //Get li array
-  let arrLi = editorUl.querySelectorAll("li");
-  console.log(arrLi);
-
-  arrLi.forEach((elem) => {
-    const checkbox = elem.querySelector(`input[type="checkbox"]`);
-    if (checkbox.checked) {
-      deleteCategory(elem);
-    }
-
-    editCategory(elem);
-  });
-
-  arrCategory.forEach(() => {});
-  editor.style.display = "none";
-});
-
-showAllNews();
+getArrCategory();
+getArrNews();
